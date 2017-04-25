@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:p="http://www.springframework.org/schema/p" 
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/util
+  http://www.springframework.org/schema/util/spring-util.xsd
+  http://www.springframework.org/schema/context 
+  http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/mvc
+  http://www.springframework.org/schema/mvc/spring-mvc.xsd
+  http://www.springframework.org/schema/tx 
+  http://www.springframework.org/schema/tx/spring-tx.xsd
+  http://www.springframework.org/schema/aop 
+  http://www.springframework.org/schema/aop/spring-aop.xsd" >
+  	
+    <context:component-scan base-package="com.web.controller,com.web.log" />
+    <!-- 默认的注解映射的支持 -->  
+    <mvc:annotation-driven />
+    <!-- 将代理交给cglib -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <!-- 开启事务 -->
+    <tx:annotation-driven/>
+    
+    
+    <!-- 如果当前请求为“/”时，则转发到“index” -->
+    <mvc:view-controller path="/" view-name="index"/> 
+    <!-- 静态资源映射 -->
+    <mvc:resources mapping="/bootstrap/**" location="/WEB-INF/bootstrap/" />
+    <mvc:resources mapping="/dist/**" location="/WEB-INF/dist/" />
+    <mvc:resources mapping="/plugins/**" location="/WEB-INF/plugins/" />
+    <mvc:resources mapping="/js/**" location="/WEB-INF/js/" />
+    <mvc:resources mapping="/css/**" location="/WEB-INF/css/" />
+    <mvc:resources mapping="/images/**" location="/WEB-INF/images/" />
+    <mvc:resources mapping="/fonts/**" location="/WEB-INF/fonts/" />
+    <mvc:resources mapping="/jqueryui/**" location="/WEB-INF/jqueryui/" />
+    <!-- 当上面要访问的静态资源不包括在上面的配置中时，则根据此配置来访问 -->
+    <mvc:resources location="/error/**" mapping="/WEB-INF/views/error/"></mvc:resources>
+    <mvc:default-servlet-handler/>
+      
+    <!-- 视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+       <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+       <property name="contentType" value="text/html"/>        
+       <property name="prefix" value="/WEB-INF/views/"/>
+       <property name="suffix" value=".jsp"/>
+    </bean>
+    
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+     	<property name="maxUploadSize" value="104857600" />
+     	<property name="maxInMemorySize" value="4096" />
+     	<property name="defaultEncoding" value="UTF-8"></property>
+	</bean>
+	
+	<mvc:interceptors>
+		<!--配置自定义拦截器  -->
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean class="com.web.interceptor.LogInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	<!-- 
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+    <property name="exceptionMappings">
+        <map>
+            <entry key="ResourceNotFoundException" value="common/error/resourceNotFoundError" />
+            <entry key="DataAccessException" value="common/error/dataAccessError" />
+        </map>
+    </property>
+    <property name="statusCodes">
+        <map>
+            <entry key="common/error/resourceNotFoundError" value="404" />
+            <entry key="common/error/dataAccessError" value="500" />
+        </map>
+    </property>
+    </bean>
+     -->
+    <bean id="exceptionResolver" class="com.web.exception.ResolveException"></bean>
+</beans>

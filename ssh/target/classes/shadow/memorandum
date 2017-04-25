@@ -1,0 +1,9 @@
+初始化数据库
+
+会计科目accountingSubject
+凭证字 voucherGroup
+角色 role
+用户 user
+现金cash
+银行bank
+收支类别IEType
